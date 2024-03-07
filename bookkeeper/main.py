@@ -11,3 +11,5 @@ if __name__ == "__main__":
     app.controller.create('Budget', {'monthly': 100_000,  # TODO: this should be a test
                                      'weekly': 25_000,
                                      'daily': 4_000})
+    b = app.controller.read('Budget')  # TODO: this should be a test
+    print(b)
