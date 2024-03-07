@@ -1,4 +1,5 @@
 from bookkeeper.models.entities import db
+import bookkeeper.controller.query_helper as qh
 
 
 class CrudController:
@@ -9,7 +10,12 @@ class CrudController:
         except Exception as e:
             print(e)
 
-    def create(self, entity):
+    def create(self, entity, params):
+        if entity == 'Budget':
+            qh.add_budget(monthly=params['monthly'], weekly=params['weekly'],
+                          daily=params['daily'])
+            return
+
         raise NotImplementedError(f'Добавление для сущности {entity} не реализовано!')
 
     def read(self, entity):
