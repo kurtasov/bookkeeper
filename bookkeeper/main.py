@@ -1,13 +1,9 @@
-from models import entities
+from controller.crud_controller import CrudController
 
 
 class App:
     def __init__(self):
-        try:
-            entities.db.bind(provider='sqlite', filename='database.sqlite', create_db=True)
-            entities.db.generate_mapping(create_tables=True)
-        except Exception as e:
-            print(e)
+        self.controller = CrudController()
 
 
 if __name__ == "__main__":
