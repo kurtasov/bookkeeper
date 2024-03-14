@@ -7,6 +7,8 @@ class App(QApplication):
         super().__init__()
         self.view = MainWindow()
         self.controller = CrudController()
+        self.view.set_controller(self.controller)
+        self.view.refresh_budgets()
         self.view.show()
 
 
