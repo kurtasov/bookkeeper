@@ -10,9 +10,12 @@ class MainWindow(QMainWindow):
 
         self.layout = QVBoxLayout()
 
-        self.layout.addWidget(QLabel('1'))
-        self.layout.addWidget(QLabel('2'))
-        self.layout.addWidget(QLabel('3'))
+        self.budget_monthly = QLabel('Бюджет на месяц: ')
+        self.budget_weekly = QLabel('Бюджет на неделю: ')
+        self.budget_daily = QLabel('Бюджет на день: ')
+        self.layout.addWidget(self.budget_monthly)
+        self.layout.addWidget(self.budget_weekly)
+        self.layout.addWidget(self.budget_daily)
 
         self.widget = QWidget()
         self.widget.setLayout(self.layout)
