@@ -24,7 +24,12 @@ class CrudController:
 
         raise NotImplementedError(f'Чтение для сущности {entity} не реализовано!')
 
-    def update(self, entity):
+    def update(self, entity, params):
+        if entity == 'Budget':  # For Budget, update is the same as create
+            qh.add_budget(monthly=params['monthly'], weekly=params['weekly'],
+                          daily=params['daily'])
+            return
+
         raise NotImplementedError(f'Изменение для сущности {entity} не реализовано!')
 
     def delete(self, entity):
