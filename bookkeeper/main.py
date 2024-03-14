@@ -9,6 +9,7 @@ class App(QApplication):
         self.controller = CrudController()
         self.view.set_controller(self.controller)
         self.view.refresh_budgets()
+        self.view.refresh_categories()
         self.view.show()
 
 

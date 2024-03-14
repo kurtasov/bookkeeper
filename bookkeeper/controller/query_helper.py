@@ -1,5 +1,5 @@
 from pony.orm import *
-from bookkeeper.models.entities import Budget
+from bookkeeper.models.entities import Budget, Category
 
 
 @db_session
@@ -18,3 +18,12 @@ def get_budget():
         return tuple([budget.monthly, budget.weekly, budget.daily])  # TODO: return the object itself for GUI?
     except Exception as e:
         print(e)  # TODO: This should be sent to GUI in a user-friendly manner
+
+@db_session
+def get_category():
+    try:
+        q = select((c.parent.name, c.name) for c in Category if c.parent is not None)
+        cats = list(q)
+        return tuple(" > ".join(cat) for cat in cats)
+    except Exception as e:
+        print(e)

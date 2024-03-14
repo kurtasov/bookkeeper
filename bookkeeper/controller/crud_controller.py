@@ -21,6 +21,8 @@ class CrudController:
     def read(self, entity, params=None):
         if entity == 'Budget':
             return qh.get_budget()
+        if entity == 'Category':
+            return qh.get_category()
 
         raise NotImplementedError(f'Чтение для сущности {entity} не реализовано!')
 

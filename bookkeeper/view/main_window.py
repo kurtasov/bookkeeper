@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton,
-                               QLineEdit)
+                               QLineEdit, QComboBox)
 
 
 class MainWindow(QMainWindow):
@@ -29,6 +29,10 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(self.budget_button)
         self.budget_button.clicked.connect(self.on_budget_button_click)
 
+        self.category = QComboBox(self)
+        self.layout.addWidget(QLabel('Выберите категорию расхода:'))
+        self.layout.addWidget(self.category)
+
         self.widget = QWidget()
         self.widget.setLayout(self.layout)
 
@@ -48,3 +52,7 @@ class MainWindow(QMainWindow):
                                           'weekly': float(self.edit_budget_weekly.text()),
                                           'daily': float(self.edit_budget_daily.text())})
         self.refresh_budgets()
+
+    def refresh_categories(self):
+        cats = self.controller.read('Category')
+        self.category.addItems(cats)
