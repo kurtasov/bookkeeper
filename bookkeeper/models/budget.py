@@ -27,4 +27,3 @@ class Category(db.Entity):
     Parent = Optional('Category', reverse='Parent')
 
 
-db.generate_mapping()
