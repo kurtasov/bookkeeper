@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton,
-                               QLineEdit, QComboBox)
+                               QLineEdit, QComboBox, QTableWidget, QAbstractItemView)
+from PySide6.QtWidgets import QHeaderView
 
 
 class MainWindow(QMainWindow):
@@ -24,6 +25,25 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(self.budget_daily)
         self.edit_budget_daily = QLineEdit()
         self.layout.addWidget(self.edit_budget_daily)
+
+        expenses_table = QTableWidget(4, 20)
+
+        expenses_table.setColumnCount(4)
+        expenses_table.setRowCount(20)
+        expenses_table.setHorizontalHeaderLabels(
+            "Дата Сумма Категория Комментарий".split())
+
+        header = expenses_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(3, QHeaderView.Stretch)
+
+        expenses_table.setEditTriggers(
+            QAbstractItemView.NoEditTriggers)
+        expenses_table.verticalHeader().hide()
+
+        self.layout.addWidget(expenses_table)
 
         self.budget_button = QPushButton('Задать бюджет')
         self.layout.addWidget(self.budget_button)
