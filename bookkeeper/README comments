@@ -1,8 +1,0 @@
-Получилось запустить PonyORM через PyCharm по инструкции: https://www.jetbrains.com/help/pycharm/poetry.html#poetry-env
-ввела команду: /home/jetbrains/.local/bin/poetry
-Клонирование сделала при этом через команду: (If no project is currently open, click) Get from VCS
-Инструкция здесь - https://www.jetbrains.com/help/pycharm/set-up-a-git-repository.html#put-existing-project-under-Git
-Пробовала много других вариантов стабильно выдавал ошибки PyCharm, что не может установить Poetry или, что нет Pony.
-
-Git branch при создании в PyCharm легко создаются сами на GitHub при выполнении Commit&Push
-

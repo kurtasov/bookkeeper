@@ -9,6 +9,7 @@ class CrudController:
             db.generate_mapping(create_tables=True)
         except Exception as e:
             print(e)
+
     def create(self, entity, params):
         if entity == 'Budget':
             qh.add_budget(monthly=params['monthly'], weekly=params['weekly'],
@@ -20,10 +21,17 @@ class CrudController:
     def read(self, entity, params=None):
         if entity == 'Budget':
             return qh.get_budget()
+        if entity == 'Category':
+            return qh.get_category()
 
         raise NotImplementedError(f'Чтение для сущности {entity} не реализовано!')
 
-    def update(self, entity):
+    def update(self, entity, params):
+        if entity == 'Budget':  # For Budget, update is the same as create
+            qh.add_budget(monthly=params['monthly'], weekly=params['weekly'],
+                          daily=params['daily'])
+            return
+
         raise NotImplementedError(f'Изменение для сущности {entity} не реализовано!')
 
     def delete(self, entity):
