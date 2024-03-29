@@ -1,7 +1,7 @@
 from controller.crud_controller import CrudController
 from view.main_window import MainWindow
 from PySide6.QtWidgets import QApplication
-from connection import Data
+
 
 class App(QApplication):
     def __init__(self):

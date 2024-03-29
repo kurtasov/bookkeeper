@@ -14,6 +14,10 @@ from bookkeeper.models.entities import db
 
 from bookkeeper.models.entities import Category
 
+from bookkeeper.models.entities import Expense
+
+from bookkeeper.models.entities import Budget
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -23,7 +27,7 @@ class MainWindow(QMainWindow):
 
         self.controller = None
         self.setWindowTitle("Программа для ведения бюджета")
-        self.setFixedSize(500, 350)
+        self.setFixedSize(500, 500)
 
         self.layout = QVBoxLayout()
 
@@ -54,7 +58,7 @@ class MainWindow(QMainWindow):
         header.setSectionResizeMode(3, QHeaderView.Stretch)
 
         expenses_table.setEditTriggers(
-            QAbstractItemView.NoEditTriggers)
+            QAbstractItemView.DoubleClicked) # возможности настройки редактирования ячеек - https://doc.qt.io/qt-6/qabstractitemview.html#EditTrigger-enum
         expenses_table.verticalHeader().hide()
 
         self.layout.addWidget(expenses_table)
@@ -64,10 +68,21 @@ class MainWindow(QMainWindow):
         self.budget_button.clicked.connect(self.on_budget_button_click)
 
 
+
+
+        # Определение обработчика события
+        def on_add_transaction_button_click(self):
+            # Здесь можно добавить логику для открытия диалогового окна или других действий, связанных с добавлением транзакции
+            pass
+
         self.create_category_button = QPushButton('Создать категорию')
         self.layout.addWidget(self.create_category_button)
         self.create_category_button.clicked.connect(self.on_create_category_button_click)
 
+
+        self.delete_category_button = QPushButton('Удалить категорию')
+        self.layout.addWidget(self.delete_category_button)
+        self.delete_category_button.clicked.connect(self.on_delete_category_button_click)
 
 
 
@@ -100,6 +115,7 @@ class MainWindow(QMainWindow):
                                           'daily': float(self.edit_budget_daily.text())})
         self.refresh_budgets()
 
+
     def refresh_categories(self):
         cats = self.controller.read('Category')
         self.category.addItems(cats)
@@ -107,6 +123,12 @@ class MainWindow(QMainWindow):
     def on_create_category_button_click(self):
         # Обработка нажатия на кнопку "Создать категорию"
         pass
+
+    def on_delete_category_button_click(self):
+        # Обработка нажатия на кнопку "Удалить категорию"
+        pass
+
+
 
 
 
@@ -117,4 +139,30 @@ class MainWindow(QMainWindow):
 
         if ok_pressed:
             new_category = Category(name=new_category_name)
+
+
+
+
+    # Функция для добавления записи в базу данных
+    @db_session
+    def add_expense_to_database(date, amount, category, comment):
+        new_expense = Expense(date=date, amount=amount, category=category, comment=comment)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

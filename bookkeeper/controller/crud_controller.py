@@ -36,3 +36,5 @@ class CrudController:
 
     def delete(self, entity):
         raise NotImplementedError(f'Удаление для сущности {entity} не реализовано!')
+
+
