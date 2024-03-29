@@ -1,3 +1,6 @@
+"""Модуль создает классы таблиц баз данных.
+Создан с помощью PonyORM"""
+
 from datetime import date
 from pony.orm import *
 

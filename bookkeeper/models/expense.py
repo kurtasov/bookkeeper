@@ -6,6 +6,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 
 
+
+
 @dataclass(slots=True)
 class Expense:
     """

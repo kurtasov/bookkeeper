@@ -1,11 +1,25 @@
+""" Модуль главного окна пользовательского интерфейса программы"""
+
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton,
                                QLineEdit, QComboBox, QTableWidget, QAbstractItemView)
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLineEdit, QPushButton, QDialog, QInputDialog
+
+
 from PySide6.QtWidgets import QHeaderView
+
+from pony.orm import *
+# Подключение к существующей базе данных
+
+from bookkeeper.models.entities import db
+
+from bookkeeper.models.entities import Category
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
+
 
         self.controller = None
         self.setWindowTitle("Программа для ведения бюджета")
@@ -49,9 +63,22 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(self.budget_button)
         self.budget_button.clicked.connect(self.on_budget_button_click)
 
+
+        self.create_category_button = QPushButton('Создать категорию')
+        self.layout.addWidget(self.create_category_button)
+        self.create_category_button.clicked.connect(self.on_create_category_button_click)
+
+
+
+
+
+
         self.category = QComboBox(self)
         self.layout.addWidget(QLabel('Выберите категорию расхода:'))
         self.layout.addWidget(self.category)
+
+
+
 
         self.widget = QWidget()
         self.widget.setLayout(self.layout)
@@ -76,3 +103,18 @@ class MainWindow(QMainWindow):
     def refresh_categories(self):
         cats = self.controller.read('Category')
         self.category.addItems(cats)
+
+    def on_create_category_button_click(self):
+        # Обработка нажатия на кнопку "Создать категорию"
+        pass
+
+
+
+    # Декоратор для обертывания создания новой категории в транзакцию
+    @db_session
+    def on_create_category_button_click(self):
+        new_category_name, ok_pressed = QInputDialog.getText(self, "Введите название категории", "Название категории:")
+
+        if ok_pressed:
+            new_category = Category(name=new_category_name)
+
