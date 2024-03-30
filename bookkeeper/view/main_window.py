@@ -1,11 +1,16 @@
 """ Модуль главного окна пользовательского интерфейса программы"""
 
+from PySide6 import QtWidgets
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton,
                                QLineEdit, QComboBox, QTableWidget, QAbstractItemView)
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLineEdit, QPushButton, QDialog, QInputDialog
+from PySide6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLineEdit, QPushButton, QDialog, QInputDialog)
+from bookkeeper.new_transaction import Ui_Dialog
+
 
 
 from PySide6.QtWidgets import QHeaderView
+
+
 
 from pony.orm import *
 # Подключение к существующей базе данных
@@ -85,6 +90,9 @@ class MainWindow(QMainWindow):
         self.delete_category_button.clicked.connect(self.on_delete_category_button_click)
 
 
+        self.add_transaction_button = QPushButton('Добавить транзакцию') # Создание кнопки "Добавить транзакцию"
+        self.layout.addWidget(self.add_transaction_button) # Добавление кнопки на экран
+        self.add_transaction_button.clicked.connect(self.on_add_transaction_button_click)  # Привязка обработчика события к кнопке
 
 
 
@@ -128,6 +136,11 @@ class MainWindow(QMainWindow):
         # Обработка нажатия на кнопку "Удалить категорию"
         pass
 
+    # Определение обработчика события
+    def on_add_transaction_button_click(self):
+        # Здесь можно добавить логику для открытия диалогового окна или других действий, связанных с добавлением транзакции
+        pass
+
 
 
 
@@ -140,13 +153,37 @@ class MainWindow(QMainWindow):
         if ok_pressed:
             new_category = Category(name=new_category_name)
 
+    def on_add_transaction_button_click(self):
+        self.new_window = QtWidgets.QDialog()
+        self.ui_window = Ui_Dialog()
+        self.ui_window.setupUi(self.new_window)
+        self.new_window.show()
+        sender = self.sender()
+        if sender.text() == "New transaction":
+            self.ui_window.btn_new_transaction.clicked.connect(self.add_new_transaction)
+        else:
+            self.ui_window.btn_new_transaction.clicked.connect(self.edit_current_transaction)
+
+    def add_new_transaction(self):
+        date = self.ui_window.dateEdit.text()
+        category = self.ui_window.cb_choose_category.currentText()
+        description = self.ui_window.le_description.text()
+        balance = self.ui_window.le_balance.text()
+        status = self.ui_window.cb_status.currentText()
+
+        self.conn.add_new_transaction_query(date, category, description, balance, status)
+        self.view_data()
+        self.reload_data()
+        self.new_window.close()
 
 
 
-    # Функция для добавления записи в базу данных
-    @db_session
-    def add_expense_to_database(date, amount, category, comment):
-        new_expense = Expense(date=date, amount=amount, category=category, comment=comment)
+
+
+
+
+
+
 
 
 
