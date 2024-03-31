@@ -5,6 +5,7 @@ from bookkeeper.view.add_window import AddWindow
 
 
 
+
 from PySide6.QtWidgets import QHeaderView
 
 
@@ -13,6 +14,8 @@ from pony.orm import *
 # Подключение к существующей базе данных
 
 from bookkeeper.models.entities import Category
+from bookkeeper.models.entities import Budget
+from bookkeeper.models.entities import db
 
 
 class MainWindow(QMainWindow):
@@ -144,6 +147,8 @@ class MainWindow(QMainWindow):
     def on_add_transaction_button_click(self):    # Открытие нового окна
         self.add_window = AddWindow()
         self.add_window.show()
+
+
 
 
 

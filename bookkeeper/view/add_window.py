@@ -1,14 +1,24 @@
 """ Модуль окна добавления трансакции пользовательского интерфейса программы"""
+from PySide6.QtWidgets import (QMainWindow, QLabel, QComboBox, QTableWidget, QAbstractItemView)
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLineEdit, QPushButton, QInputDialog)
+from bookkeeper.controller.crud_controller import CrudController
+from datetime import datetime
+from bookkeeper.models.entities import *
 
-from PySide6 import QtWidgets
-from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton,
-                               QLineEdit, QComboBox, QTableWidget, QAbstractItemView)
-from PySide6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLineEdit, QPushButton, QDialog, QInputDialog)
+
 
 
 
 from PySide6.QtWidgets import QHeaderView
 
+
+
+from pony.orm import *
+# Подключение к существующей базе данных
+
+from bookkeeper.models.entities import Category
+from bookkeeper.models.entities import Budget
+from bookkeeper.models.entities import db
 
 
 class AddWindow(QMainWindow):
@@ -17,37 +27,46 @@ class AddWindow(QMainWindow):
 
 
 
-        self.controller = None
+        self.controller = CrudController()
         self.setWindowTitle("Программа для ведения бюджета")
-        self.setFixedSize(500, 300)
+        self.setFixedSize(500, 500)
 
         self.layout = QVBoxLayout()
 
-        self.budget_monthly = QLabel('Бюджет на месяц: ')
-        self.budget_weekly = QLabel('Бюджет на неделю: ')
-        self.budget_daily = QLabel('Бюджет на день: ')
-        self.layout.addWidget(self.budget_monthly)
-        self.edit_budget_monthly = QLineEdit()
-        self.layout.addWidget(self.edit_budget_monthly)
-        self.layout.addWidget(self.budget_weekly)
-        self.edit_budget_weekly = QLineEdit()
-        self.layout.addWidget(self.edit_budget_weekly)
-        self.layout.addWidget(self.budget_daily)
-        self.edit_budget_daily = QLineEdit()
-        self.layout.addWidget(self.edit_budget_daily)
+        self.date = QLabel('Дата: ')
+        self.amount = QLabel('Сумма: ')
+        self.comment = QLabel('Комментарий: ')
+        self.layout.addWidget(self.date)
+        self.edit_date = QLineEdit()
+        self.layout.addWidget(self.edit_date)
+        self.layout.addWidget(self.amount)
+        self.edit_amount = QLineEdit()
+        self.layout.addWidget(self.edit_amount)
+        self.layout.addWidget(self.comment)
+        self.edit_comment = QLineEdit()
+        self.layout.addWidget(self.edit_comment)
+
+
+        self.category = QComboBox(self)
+        self.layout.addWidget(QLabel('Выберите категорию расхода:'))
+        self.layout.addWidget(self.category)
+        with db_session:
+            categories = Category.select()
+            for category in categories:
+                self.category.addItem(category.name)
 
 
 
-        self.budget_button = QPushButton('Задать бюджет')
+
+
+        self.budget_button = QPushButton('Записать расходы')
         self.layout.addWidget(self.budget_button)
-        self.budget_button.clicked.connect(self.on_budget_button_click)
+        self.budget_button.clicked.connect(self.on_expense_button_click)
 
 
 
 
         # Определение обработчика события
-        def on_add_transaction_button_click(self):# Здесь можно добавить логику для открытия диалогового окна или других действий, связанных с добавлением транзакции
-            pass
 
         self.create_category_button = QPushButton('Создать категорию')
         self.layout.addWidget(self.create_category_button)
@@ -59,36 +78,48 @@ class AddWindow(QMainWindow):
         self.delete_category_button.clicked.connect(self.on_delete_category_button_click)
 
 
-
-
-
-
-        self.category = QComboBox(self)
-        self.layout.addWidget(QLabel('Выберите категорию расхода:'))
-        self.layout.addWidget(self.category)
-
-
-
-
         self.widget = QWidget()
         self.widget.setLayout(self.layout)
 
         self.setCentralWidget(self.widget)
 
+
+
     def set_controller(self, controller):
         self.controller = controller
 
-    def refresh_budgets(self):
-        bdgt = self.controller.read('Budget')
-        self.budget_monthly.setText('Бюджет на месяц: ' + str(bdgt[0]))
-        self.budget_weekly.setText('Бюджет на неделю: ' + str(bdgt[1]))
-        self.budget_daily.setText('Бюджет на день: ' + str(bdgt[2]))
+    def create_expense(self):
+        params = {
+            'amount': float(self.edit_amount.text()),
+            'expense_date': datetime.strptime(self.edit_date.text(), '%d.%m.%y'),
+            'comment': str(self.edit_comment.text()),
+            'category_id': self.category.currentIndex()  # Пример значения идентификатора категории
+        }
 
-    def on_budget_button_click(self):
-        self.controller.update('Budget', {'monthly': float(self.edit_budget_monthly.text()),
-                                          'weekly': float(self.edit_budget_weekly.text()),
-                                          'daily': float(self.edit_budget_daily.text())})
-        self.refresh_budgets()
+        expr = self.controller.create('Expense', params)
+        self.amount.setText('Сумма: ' )
+        self.date.setText('Дата: ')
+        self.comment.setText('Комментарий: ')
+
+
+
+
+
+
+    def on_expense_button_click(self):
+        expense_date = datetime.strptime(self.edit_date.text(), '%d.%m.%y')
+        self.controller.create('Expense', {
+            'amount': float(self.edit_amount.text()),
+            'expense_date': expense_date,
+            'comment': str(self.edit_comment.text()),
+            'category_id': self.category.currentIndex()  # Предполагая, что 'category' должен быть выбран из QComboBox
+        })
+        self.create_expense()
+
+
+
+
+
 
 
     def refresh_categories(self):
@@ -102,3 +133,20 @@ class AddWindow(QMainWindow):
     def on_delete_category_button_click(self):
         # Обработка нажатия на кнопку "Удалить категорию"
         pass
+
+
+
+
+
+
+    # Декоратор для обертывания создания новой категории в транзакцию
+    @db_session
+    def on_create_category_button_click(self):
+        new_category_name, ok_pressed = QInputDialog.getText(self, "Введите название категории", "Название категории:")
+
+        if ok_pressed:
+            new_category = Category(name=new_category_name)
+
+
+
+
