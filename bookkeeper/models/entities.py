@@ -29,3 +29,5 @@ class Budget(db.Entity):
     monthly = Required(float, default=56000)
     weekly = Required(float, default=14000)
     daily = Required(float, default=2000)
+
+

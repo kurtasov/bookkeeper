@@ -96,13 +96,6 @@ class AddWindow(QMainWindow):
             'category_id': self.category.currentIndex()  # Пример значения идентификатора категории
         }
 
-        expr = self.controller.create('Expense', params)
-        self.amount.setText('Сумма: ' )
-        self.date.setText('Дата: ')
-        self.comment.setText('Комментарий: ')
-
-
-
 
 
 
@@ -148,5 +141,21 @@ class AddWindow(QMainWindow):
             new_category = Category(name=new_category_name)
 
 
+
+
+    def load_data_from_db(self):
+        db_connection = sqlite3.connect('db')  # Подставьте имя вашей базы данных
+        cursor = db_connection.cursor()
+        cursor.execute("SELECT amount, expense_date, category, comment FROM expenses")
+
+        rows = cursor.fetchall()
+        self.table.setRowCount(len(rows))
+
+        for i, row in enumerate(rows):
+            for j, val in enumerate(row):
+                item = QTableWidgetItem(str(val))
+                self.table.setItem(i, j, item)
+
+        db_connection.close()
 
 

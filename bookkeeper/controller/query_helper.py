@@ -1,5 +1,6 @@
 from pony.orm import *
 from bookkeeper.models.entities import *
+import sqlite3
 
 
 @db_session
@@ -35,6 +36,7 @@ def get_category():
     except Exception as e:
         print(e)
 
+
 @db_session
 def get_expense():
     try:
@@ -43,3 +45,14 @@ def get_expense():
         return tuple([exspense.expense_date, exspense.amou])
     except Exception as e:
         print(e)
+
+def load_data_from_db(self):
+    db_connection = sqlite3.connect('db')  # Подставьте имя вашей базы данных
+    cursor = db_connection.cursor()
+    cursor.execute("SELECT amount, expense_date, category, comment FROM expenses")
+
+    rows = cursor.fetchall()
+    self.table.setRowCount(len(rows))
+
+
+    db_connection.close()

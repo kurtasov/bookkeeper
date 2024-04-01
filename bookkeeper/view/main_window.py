@@ -2,6 +2,12 @@
 from PySide6.QtWidgets import (QMainWindow, QLabel, QComboBox, QTableWidget, QAbstractItemView)
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLineEdit, QPushButton, QInputDialog)
 from bookkeeper.view.add_window import AddWindow
+import sqlite3
+from pony.orm import db_session, select
+from PySide6.QtWidgets import QTableWidgetItem
+
+
+
 
 
 
@@ -11,9 +17,10 @@ from PySide6.QtWidgets import QHeaderView
 
 
 from pony.orm import *
-# Подключение к существующей базе данных
 
+# Подключение к существующей базе данных
 from bookkeeper.models.entities import Category
+from bookkeeper.models.entities import Expense
 from bookkeeper.models.entities import Budget
 from bookkeeper.models.entities import db
 
@@ -43,24 +50,34 @@ class MainWindow(QMainWindow):
         self.edit_budget_daily = QLineEdit()
         self.layout.addWidget(self.edit_budget_daily)
 
-        expenses_table = QTableWidget(4, 20)
+        self.expenses_table = QTableWidget(4, 200)
 
-        expenses_table.setColumnCount(4)
-        expenses_table.setRowCount(20)
-        expenses_table.setHorizontalHeaderLabels(
+        self.expenses_table.setColumnCount(4)
+        self.expenses_table.setRowCount(20)
+        self.expenses_table.setHorizontalHeaderLabels(
             "Дата Сумма Категория Комментарий".split())
 
-        header = expenses_table.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(3, QHeaderView.Stretch)
-
-        expenses_table.setEditTriggers(
+        self.expenses_table.setEditTriggers(
             QAbstractItemView.DoubleClicked) # возможности настройки редактирования ячеек - https://doc.qt.io/qt-6/qabstractitemview.html#EditTrigger-enum
-        expenses_table.verticalHeader().hide()
+        self.expenses_table.verticalHeader().hide()
 
-        self.layout.addWidget(expenses_table)
+
+        self.layout.addWidget(self.expenses_table)
+
+        @db_session
+        def load_expenses_to_table(expenses_table):
+            expenses = Expense.select()
+            for idx, expense in enumerate(expenses):
+                if idx >= expenses_table.rowCount():
+                    expenses_table.setRowCount(idx + 1)
+                for col, attr in enumerate([expense.attr1, expense.attr2, ...]):
+                    item = QTableWidgetItem(str(attr))
+                    expenses_table.setItem(idx, col, item)
+        load_expenses_to_table(expenses_table)
+
+
+
+
 
         self.budget_button = QPushButton('Задать бюджет')
         self.layout.addWidget(self.budget_button)
@@ -144,32 +161,14 @@ class MainWindow(QMainWindow):
         if ok_pressed:
             new_category = Category(name=new_category_name)
 
+
+
+
+
+
     def on_add_transaction_button_click(self):    # Открытие нового окна
         self.add_window = AddWindow()
         self.add_window.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
