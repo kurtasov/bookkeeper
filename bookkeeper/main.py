@@ -11,6 +11,7 @@ class App(QApplication):
         self.view.set_controller(self.controller)
 
         self.view.refresh_categories()
+        self.view.load_expenses_to_table()        
         self.view.show()
 
 
