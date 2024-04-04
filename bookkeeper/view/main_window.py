@@ -53,7 +53,7 @@ class MainWindow(QMainWindow):
         self.expenses_table = QTableWidget(4, 200)
 
         self.expenses_table.setColumnCount(4)
-        self.expenses_table.setRowCount(20)
+        self.expenses_table.setRowCount(0)
         self.expenses_table.setHorizontalHeaderLabels(
             "Дата Сумма Категория Комментарий".split())
 
@@ -64,16 +64,6 @@ class MainWindow(QMainWindow):
 
         self.layout.addWidget(self.expenses_table)
 
-        @db_session
-        def load_expenses_to_table(expenses_table):
-            expenses = Expense.select()
-            for idx, expense in enumerate(expenses):
-                if idx >= expenses_table.rowCount():
-                    expenses_table.setRowCount(idx + 1)
-                for col, attr in enumerate([expense.attr1, expense.attr2, ...]):
-                    item = QTableWidgetItem(str(attr))
-                    expenses_table.setItem(idx, col, item)
-        load_expenses_to_table(expenses_table)
 
 
 
@@ -136,6 +126,18 @@ class MainWindow(QMainWindow):
         cats = self.controller.read('Category')
         self.category.addItems(cats)
 
+    @db_session
+    def load_expenses_to_table(self):  # (expenses_table):
+        expenses = self.controller.read('Expense')
+        row_position = self.expenses_table.rowCount()  # See https://stackoverflow.com/questions/24044421/how-to-add-a-row-in-a-tablewidget-pyqt
+
+        for e in expenses:
+            self.expenses_table.insertRow(row_position)
+            self.expenses_table.setItem(row_position, 0, QTableWidgetItem(str(e.expense_date)))
+            self.expenses_table.setItem(row_position, 1, QTableWidgetItem(str(e.amount)))
+            self.expenses_table.setItem(row_position, 2, QTableWidgetItem(e.category.name))
+            self.expenses_table.setItem(row_position, 3, QTableWidgetItem(e.comment))
+    
     def on_create_category_button_click(self):
         # Обработка нажатия на кнопку "Создать категорию"
         pass
