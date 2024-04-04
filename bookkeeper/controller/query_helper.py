@@ -40,9 +40,9 @@ def get_category():
 @db_session
 def get_expense():
     try:
-        q = select(b for b in Expense).order_by(lambda: desc(b.id)).limit(1)
+        q = select(b for b in Expense).order_by(lambda: desc(b.id))
         exspense = list(q)
-        return tuple([exspense.expense_date, exspense.amou])
+        return exspense
     except Exception as e:
         print(e)
 
